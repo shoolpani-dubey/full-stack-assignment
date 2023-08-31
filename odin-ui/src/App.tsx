@@ -1,5 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { addOpenStreepMapLayer, createMapInstance } from "./App.service";
+import {
+  addOpenStreepMapLayer,
+  addSarImageLayer,
+  centerMapAroundSarBounds,
+  createMapInstance,
+} from "./App.service";
 import { mapCenter } from "./App.constants";
 import appStyle from "./App.module.scss";
 
@@ -13,6 +18,8 @@ export const App = (): JSX.Element => {
       return;
     }
     addOpenStreepMapLayer(mapInstance);
+    addSarImageLayer(mapInstance);
+    centerMapAroundSarBounds(mapInstance);
   }, [mapInstance]);
 
   useEffect(() => {
@@ -24,12 +31,5 @@ export const App = (): JSX.Element => {
     setMapInstance(_instance);
   }, [mapRef]);
 
-  return (
-    <div
-      id={mapID}
-      // style={{ height: "100vh" }}
-      className={appStyle.mapRoot}
-      ref={mapRef}
-    />
-  );
+  return <div id={mapID} className={appStyle.mapRoot} ref={mapRef} />;
 };
