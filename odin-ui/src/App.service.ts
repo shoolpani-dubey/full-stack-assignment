@@ -30,7 +30,7 @@ const getSarImageBounds = () => {
 };
 
 const addSarImageLayer = (mapInstance: L.Map) => {
-  const sarImageUrl = "SAR.png";
+  const sarImageUrl = process.env.REACT_APP_SAR_URL;
   const sarImageBounds = getSarImageBounds();
   L.imageOverlay(sarImageUrl, sarImageBounds, {
     opacity: 0.7,
