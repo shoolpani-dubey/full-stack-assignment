@@ -7,10 +7,15 @@ const createMapInstance = (domID: string, center: number[]): L.Map => {
 };
 
 const addOpenStreepMapLayer = (mapInstance: L.Map) => {
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "© OpenStreetMap",
-  }).addTo(mapInstance);
+  const tileLayer = L.tileLayer(
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap",
+    }
+  );
+  tileLayer.addTo(mapInstance);
+  return tileLayer;
 };
 
 const calculateSarBoundsFromRectangleCoordinates = () => {
@@ -32,13 +37,32 @@ const getSarImageBounds = () => {
 const addSarImageLayer = (mapInstance: L.Map) => {
   const sarImageUrl = process.env.REACT_APP_SAR_URL;
   const sarImageBounds = getSarImageBounds();
-  L.imageOverlay(sarImageUrl, sarImageBounds, {
+  const imageLayer = L.imageOverlay(sarImageUrl, sarImageBounds, {
     opacity: 0.7,
-  }).addTo(mapInstance);
+  });
+  imageLayer.addTo(mapInstance);
+  return imageLayer;
 };
 
 const centerMapAroundSarBounds = (mapInstance: L.Map) => {
   mapInstance.fitBounds(calculateSarBoundsFromRectangleCoordinates());
+};
+
+const addLayerGroupControl = (
+  mapInstance: L.Map,
+  mapLayer: L.TileLayer,
+  imageLayer: L.ImageOverlay
+) => {
+  L.control
+    .layers(
+      {
+        "World Map": mapLayer,
+      },
+      {
+        "Sar Image": imageLayer,
+      }
+    )
+    .addTo(mapInstance);
 };
 
 export {
@@ -46,4 +70,5 @@ export {
   addOpenStreepMapLayer,
   addSarImageLayer,
   centerMapAroundSarBounds,
+  addLayerGroupControl,
 };

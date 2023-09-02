@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
+  addLayerGroupControl,
   addOpenStreepMapLayer,
   addSarImageLayer,
   centerMapAroundSarBounds,
@@ -17,8 +18,9 @@ export const App = (): JSX.Element => {
     if (!mapInstance) {
       return;
     }
-    addOpenStreepMapLayer(mapInstance);
-    addSarImageLayer(mapInstance);
+    const mapLayer = addOpenStreepMapLayer(mapInstance);
+    const imageLayer = addSarImageLayer(mapInstance);
+    addLayerGroupControl(mapInstance, mapLayer, imageLayer);
     centerMapAroundSarBounds(mapInstance);
   }, [mapInstance]);
 
