@@ -1,19 +1,6 @@
 declare const L: any;
-
 const createMapInstance = (domID: string, center: number[]): L.Map => {
   return L.map(domID).setView(center, 10);
-};
-
-const addOpenStreepMapLayer = (mapInstance: L.Map) => {
-  const tileLayer = L.tileLayer(
-    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      maxZoom: 19,
-      attribution: "© OpenStreetMap",
-    }
-  );
-  tileLayer.addTo(mapInstance);
-  return tileLayer;
 };
 
 const calculateSarBoundsFromRectangleCoordinates = (
@@ -65,18 +52,12 @@ const centerMapAroundSarBounds = (
 
 const addLayerGroupControl = (
   mapInstance: L.Map,
-  mapLayer: L.TileLayer,
   imageLayer: L.ImageOverlay
 ) => {
   L.control
-    .layers(
-      {
-        "World Map": mapLayer,
-      },
-      {
-        "Sar Image": imageLayer,
-      }
-    )
+    .layers({
+      "Sar Image": imageLayer,
+    })
     .addTo(mapInstance);
 };
 
@@ -87,14 +68,57 @@ const addShipImageLayer = (mapInstance: L.Map, shipPosition: number[]) => {
   });
   const shipMarker = L.marker(shipPosition, { icon: shipIcon });
   shipMarker.addTo(mapInstance);
-  // return shipMarker;
+};
+
+const addSeaMarkLayer = async (mapInstance: L.Map) => {
+  const lighthouseIcon = L.icon({
+    iconUrl: "lh.png",
+    iconSize: [24, 24],
+  });
+  const requestOptions = {
+    method: "GET",
+  };
+
+  const seamarkResp = await fetch(
+    "http://127.0.0.1:8000/seamark",
+    requestOptions
+  );
+  const seamarkJson = await seamarkResp.json();
+  if (!seamarkJson?.elements || seamarkJson.elements.length <= 0) {
+    return;
+  }
+
+  const latLongLayers: L.Marker[] = [];
+
+  seamarkJson.elements.forEach((ele: any) => {
+    const lat = ele.lat;
+    const lon = ele.lon;
+    // console.log(lat, lon);
+    if (!lat || !lon) {
+      return;
+    }
+    const position = [lat, lon];
+    const markerLayer = L.marker(position, { icon: lighthouseIcon });
+    let popup = "";
+    Object.keys(ele.tags).forEach((key) => {
+      if (!ele.tags[key]?.trim?.()) {
+        return;
+      }
+      popup += `<p>${key} :: ${ele.tags[key]} </p>`;
+    });
+    markerLayer.bindPopup(popup);
+    latLongLayers.push(markerLayer);
+  });
+  var latLons = L.layerGroup(latLongLayers);
+  latLons.addTo(mapInstance);
+  return latLons;
 };
 
 export {
   createMapInstance,
-  addOpenStreepMapLayer,
   addSarImageLayer,
   centerMapAroundSarBounds,
   addLayerGroupControl,
   addShipImageLayer,
+  addSeaMarkLayer,
 };

@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
   addLayerGroupControl,
-  addOpenStreepMapLayer,
   addSarImageLayer,
+  addSeaMarkLayer,
   addShipImageLayer,
   centerMapAroundSarBounds,
   createMapInstance,
@@ -15,19 +15,23 @@ export const App = (): JSX.Element => {
   const mapRef = useRef(null);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 
-  useEffect(() => {
-    if (!mapInstance) {
-      return;
-    }
-    const mapLayer = addOpenStreepMapLayer(mapInstance);
+  const addLayersToMapInstance = async (mapInstance: L.Map) => {
     const imageLayer = addSarImageLayer(
       mapInstance,
       mapCenter,
       sarCornerCoordinates
     );
     addShipImageLayer(mapInstance, shipPosition);
-    addLayerGroupControl(mapInstance, mapLayer, imageLayer);
+    addSeaMarkLayer(mapInstance);
+    addLayerGroupControl(mapInstance, imageLayer);
     centerMapAroundSarBounds(mapInstance, sarCornerCoordinates);
+  };
+
+  useEffect(() => {
+    if (!mapInstance) {
+      return;
+    }
+    addLayersToMapInstance(mapInstance);
   }, [mapInstance]);
 
   useEffect(() => {
