@@ -7,4 +7,6 @@ const sarCornerCoordinates = [
   [22.351391574531174, 59.77847599974091],
 ];
 
-export { mapCenter, sarCornerCoordinates };
+const shipPosition = [59.89134, 22.30606];
+
+export { mapCenter, sarCornerCoordinates, shipPosition };

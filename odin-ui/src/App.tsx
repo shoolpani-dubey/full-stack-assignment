@@ -3,10 +3,11 @@ import {
   addLayerGroupControl,
   addOpenStreepMapLayer,
   addSarImageLayer,
+  addShipImageLayer,
   centerMapAroundSarBounds,
   createMapInstance,
 } from "./App.service";
-import { mapCenter } from "./App.constants";
+import { mapCenter, sarCornerCoordinates, shipPosition } from "./App.constants";
 import appStyle from "./App.module.scss";
 
 export const App = (): JSX.Element => {
@@ -19,9 +20,14 @@ export const App = (): JSX.Element => {
       return;
     }
     const mapLayer = addOpenStreepMapLayer(mapInstance);
-    const imageLayer = addSarImageLayer(mapInstance);
+    const imageLayer = addSarImageLayer(
+      mapInstance,
+      mapCenter,
+      sarCornerCoordinates
+    );
+    addShipImageLayer(mapInstance, shipPosition);
     addLayerGroupControl(mapInstance, mapLayer, imageLayer);
-    centerMapAroundSarBounds(mapInstance);
+    centerMapAroundSarBounds(mapInstance, sarCornerCoordinates);
   }, [mapInstance]);
 
   useEffect(() => {
