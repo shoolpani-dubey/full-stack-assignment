@@ -6,8 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "*",
-    "http://localhost:3000",
+    "*"
 ]
 
 app.add_middleware(
@@ -34,5 +33,5 @@ async def get_data():
     return FileResponse(file_path)
 
 # Serving the ui
-app.mount("/", StaticFiles(directory="../odin-ui/build",
-          html=True), name="index.html")
+# app.mount("/", StaticFiles(directory="../odin-ui/build",
+#           html=True), name="index.html")

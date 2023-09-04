@@ -41,6 +41,7 @@ export const App = (): JSX.Element => {
     // We create map instance once dom is ready
     const _instance = createMapInstance(mapID, mapCenter);
     setMapInstance(_instance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef]);
 
   return <div id={mapID} className={appStyle.mapRoot} ref={mapRef} />;

@@ -104,3 +104,62 @@ Write a text document and/or draw a diagram explaining how you would deploy Odin
 ### 5. (Optional) Add any other dataset or functionality that could make Odin more useful
 
 If you still have time, visualize any other kind of dataset or add a new functionality that might be useful for Isla when entering the dangerous waters
+
+# SOLUTION
+- The solution is now provided based on the specification
+- Deployment Strategy.
+  - We can use Docker, Ngnix and SSL to deploy the application to production
+  - I have already added Docker files to the applicaiton folder. 
+    - This will help in building the docker images that can be pushed to image repositories.
+  - The docker compose file is also added.
+    - It uses the docker files to create the required image
+  - For production we will need to setup ngnix with docker compose.
+  - A typical ngnix configuration should look as below
+```
+server { 
+    listen                  443 ssl;
+    listen                  [::]:443 ssl;
+    server_name             localhost;
+    ssl_certificate         /root/ssl/cert.pem;
+    ssl_certificate_key     /root/ssl/key.pem;
+
+    location / {
+        proxy_pass "http://api:8000/";
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+
+}
+```
+
+  - This ngnix configuration can be used by the docker compose file as shown below
+  - A dockercompose file for production will look as below:
+  ```
+  version: "3.9"
+services:
+  api:
+    image: api:latest
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./key.pem:/root/ssl/key.pem
+      - ./cert.pem:/root/ssl/cert.pem
+    ports:
+      - "443:443"
+    depends_on:
+      - api
+  ```
+  - Similar dockercomppose file will be created for the ui aswell.
+  - The api image can be built with below command.
+    - docker compose build api
+  - The web image can be built with below command.
+    - docker compose build web
+  - The build images of web or api should be pushed to any docker image repository.
+  - The production environment should be able to pull the image directly form the docker image repository.
+  - Command that can then be used to set the application up is
+    - docker componse up -d
