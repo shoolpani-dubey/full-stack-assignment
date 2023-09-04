@@ -1,0 +1,12 @@
+const mapCenter = [59.8613, 22.4673];
+
+const sarCornerCoordinates = [
+  [22.2908182629724, 59.91614254645401],
+  [22.578806773313246, 59.947751078236365],
+  [22.638044070378744, 59.809992490984754],
+  [22.351391574531174, 59.77847599974091],
+];
+
+const shipPosition = [59.89134, 22.30606];
+
+export { mapCenter, sarCornerCoordinates, shipPosition };

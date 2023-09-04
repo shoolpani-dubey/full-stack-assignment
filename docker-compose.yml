@@ -1,0 +1,12 @@
+version: '0.0.1'
+services:
+  api:
+    build: ./odin-api
+    restart: always
+    ports:
+      - 8000:8000
+  web:
+    build: ./odin-ui
+    restart: always
+    ports:
+      - 3000:3000
